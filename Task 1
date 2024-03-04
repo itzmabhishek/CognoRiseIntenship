@@ -1,0 +1,59 @@
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load breast cancer dataset
+import pandas as pd
+your_data = pd.read_csv('https://firebasestorage.googleapis.com/v0/b/notes-5bb98.appspot.com/o/breast-cancer.csv?alt=media&token=b52bcfb1-fcb4-486f-bfea-d81d213ca4e9')
+your_data = your_data.dropna()
+X = your_data.drop(['radius_mean', 'texture_mean', 'diagnosis'], axis=1)
+y = your_data['diagnosis']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Standardize features using StandardScaler
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# 1. K-Nearest Neighbors (KNN)
+knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train_scaled, y_train)
+knn_predictions = knn_model.predict(X_test_scaled)
+knn_accuracy = accuracy_score(y_test, knn_predictions)
+
+# 2. Random Forest Classifier
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train_scaled, y_train)
+rf_predictions = rf_model.predict(X_test_scaled)
+rf_accuracy = accuracy_score(y_test, rf_predictions)
+
+# 3. Logistic Regression
+logreg_model = LogisticRegression(random_state=42)
+logreg_model.fit(X_train_scaled, y_train)
+logreg_predictions = logreg_model.predict(X_test_scaled)
+logreg_accuracy = accuracy_score(y_test, logreg_predictions)
+
+# 4. Decision Tree Classifier
+dt_model = DecisionTreeClassifier(random_state=42)
+dt_model.fit(X_train_scaled, y_train)
+dt_predictions = dt_model.predict(X_test_scaled)
+dt_accuracy = accuracy_score(y_test, dt_predictions)
+
+# Display results
+print("K-Nearest Neighbors Accuracy:", knn_accuracy)
+print("Random Forest Accuracy:", rf_accuracy)
+print("Logistic Regression Accuracy:", logreg_accuracy)
+print("Decision Tree Accuracy:", dt_accuracy)
+
+# Optionally, print more detailed classification reports
+print("\nClassification Report - K-Nearest Neighbors:\n", classification_report(y_test, knn_predictions))
+print("Classification Report - Random Forest:\n", classification_report(y_test, rf_predictions))
+print("Classification Report - Logistic Regression:\n", classification_report(y_test, logreg_predictions))
+print("Classification Report - Decision Tree:\n", classification_report(y_test, dt_predictions))
