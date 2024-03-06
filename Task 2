@@ -1,0 +1,47 @@
+from sklearn.datasets import load_diabetes
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load the diabetes dataset
+diabetes_data = load_diabetes()
+X = diabetes_data.data
+y = diabetes_data.target
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Initialize classifiers
+rf_classifier = RandomForestClassifier()
+knn_classifier = KNeighborsClassifier()
+ada_classifier = AdaBoostClassifier()
+lr_classifier = LogisticRegression()
+dt_classifier = DecisionTreeClassifier()
+
+classifiers = {
+    'Random Forest': rf_classifier,
+    'K-Nearest Neighbors': knn_classifier,
+    'AdaBoost': ada_classifier,
+    'Logistic Regression': lr_classifier,
+    'Decision Tree': dt_classifier
+}
+
+# Train and evaluate each classifier
+for name, clf in classifiers.items():
+    clf.fit(X_train_scaled, y_train)
+    y_pred = clf.predict(X_test_scaled)
+    accuracy = accuracy_score(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+    print(f"Classifier: {name}")
+    print(f"Accuracy: {accuracy}")
+    print(f"Classification Report:\n{report}")
+    print("="*50)
