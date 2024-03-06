@@ -1,0 +1,62 @@
+# Import necessary libraries
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, classification_report
+import pandas as pd
+
+# Load the data
+your_data = pd.read_csv('spam.csv')
+
+# Assuming 'Category' is the target variable (class label)
+X = your_data['Message'].values
+y = your_data['Category'].values
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Use CountVectorizer to convert text data to numerical features
+vectorizer = CountVectorizer()
+X_train_vectorized = vectorizer.fit_transform(X_train)
+X_test_vectorized = vectorizer.transform(X_test)
+
+# Standardization is not needed for CountVectorizer output
+
+# 1. Logistic Regression
+logreg_model = LogisticRegression(random_state=42)
+logreg_model.fit(X_train_vectorized, y_train)
+logreg_predictions = logreg_model.predict(X_test_vectorized)
+logreg_accuracy = accuracy_score(y_test, logreg_predictions)
+
+# 2. Random Forest Classifier
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train_vectorized, y_train)
+rf_predictions = rf_model.predict(X_test_vectorized)
+rf_accuracy = accuracy_score(y_test, rf_predictions)
+
+# 3. AdaBoosting Classifier
+adaboost_model = AdaBoostClassifier(n_estimators=50, random_state=42)
+adaboost_model.fit(X_train_vectorized, y_train)
+adaboost_predictions = adaboost_model.predict(X_test_vectorized)
+adaboost_accuracy = accuracy_score(y_test, adaboost_predictions)
+
+# 4. k-Nearest Neighbors (KNN)
+knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train_vectorized, y_train)
+knn_predictions = knn_model.predict(X_test_vectorized)
+knn_accuracy = accuracy_score(y_test, knn_predictions)
+
+# Display results
+print("Logistic Regression Accuracy:", logreg_accuracy)
+print("Random Forest Accuracy:", rf_accuracy)
+print("AdaBoost Accuracy:", adaboost_accuracy)
+print("KNN Accuracy:", knn_accuracy)
+
+# Optionally, print more detailed classification reports
+print("\nClassification Report - Logistic Regression:\n", classification_report(y_test, logreg_predictions))
+print("Classification Report - Random Forest:\n", classification_report(y_test, rf_predictions))
+print("Classification Report - AdaBoost:\n", classification_report(y_test, adaboost_predictions))
+print("Classification Report - KNN:\n", classification_report(y_test, knn_predictions))
